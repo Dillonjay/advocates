@@ -79,7 +79,7 @@ export default function Home() {
   );
 
   return (
-    <main style={{ margin: "24px" }}>
+    <main className="m-6">
       <h1>Solace Advocates</h1>
       <br />
       <br />
@@ -88,10 +88,7 @@ export default function Home() {
         <p>
           Searching for: <span>{searchTerm}</span>
         </p>
-        <input
-          style={{ border: "1px solid black" }}
-          onChange={handleSearchChange}
-        />
+        <input className="border border-black" onChange={handleSearchChange} />
         <button onClick={resetSearch}>Reset Search</button>
       </div>
       <br />
