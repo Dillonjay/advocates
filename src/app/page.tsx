@@ -2,19 +2,39 @@
 
 import { ChangeEvent, useEffect, useState } from "react";
 
+type Advocate = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  city: string;
+  degree: string;
+  specialties: string[];
+  yearsOfExperience: number;
+  phoneNumber: number;
+};
+
+async function fetchData<T>(url: string): Promise<T> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch data from ${url}`);
+  }
+  return response.json();
+}
+
 export default function Home() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+  const [advocates, setAdvocates] = useState<Advocate[]>([]);
+  const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     console.log("fetching advocates...");
     const fetchAdvocates = async () => {
       try {
-        const response = await fetch("/api/advocates");
-        const jsonResponse = await response.json();
-        setAdvocates(jsonResponse.data || []);
-        setFilteredAdvocates(jsonResponse.data || []);
+        const response = await fetchData<{ data: Advocate[] }>(
+          "/api/advocates"
+        );
+        setAdvocates(response.data || []);
+        setFilteredAdvocates(response.data || []);
       } catch (e) {
         // TODO: Properly handle error in UI.
         console.error(e);
@@ -80,14 +100,14 @@ export default function Home() {
         <tbody>
           {filteredAdvocates.map((advocate) => {
             return (
-              <tr>
+              <tr key={advocate.id}>
                 <td>{advocate.firstName}</td>
                 <td>{advocate.lastName}</td>
                 <td>{advocate.city}</td>
                 <td>{advocate.degree}</td>
                 <td>
                   {advocate.specialties.map((s) => (
-                    <div>{s}</div>
+                    <div key={s}>{s}</div>
                   ))}
                 </td>
                 <td>{advocate.yearsOfExperience}</td>
