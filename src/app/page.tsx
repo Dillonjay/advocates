@@ -9,12 +9,18 @@ export default function Home() {
 
   useEffect(() => {
     console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
-      response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
-      });
-    });
+    const fetchAdvocates = async () => {
+      try {
+        const response = await fetch("/api/advocates");
+        const jsonResponse = await response.json();
+        setAdvocates(jsonResponse.data || []);
+        setFilteredAdvocates(jsonResponse.data || []);
+      } catch (e) {
+        // TODO: Properly handle error in UI.
+        console.error(e);
+      }
+    };
+    fetchAdvocates();
   }, []);
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
