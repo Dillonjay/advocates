@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 
 export default function Home() {
   const [advocates, setAdvocates] = useState([]);
   const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     console.log("fetching advocates...");
@@ -16,27 +17,26 @@ export default function Home() {
     });
   }, []);
 
-  const onChange = (e) => {
-    const searchTerm = e.target.value;
-
-    document.getElementById("search-term").innerHTML = searchTerm;
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const searchTermValue = e.currentTarget.value;
+    setSearchTerm(searchTermValue);
 
     console.log("filtering advocates...");
     const filteredAdvocates = advocates.filter((advocate) => {
       return (
-        advocate.firstName.includes(searchTerm) ||
-        advocate.lastName.includes(searchTerm) ||
-        advocate.city.includes(searchTerm) ||
-        advocate.degree.includes(searchTerm) ||
-        advocate.specialties.includes(searchTerm) ||
-        advocate.yearsOfExperience.includes(searchTerm)
+        advocate.firstName.includes(searchTermValue) ||
+        advocate.lastName.includes(searchTermValue) ||
+        advocate.city.includes(searchTermValue) ||
+        advocate.degree.includes(searchTermValue) ||
+        advocate.specialties.includes(searchTermValue) ||
+        advocate.yearsOfExperience.includes(searchTermValue)
       );
     });
 
     setFilteredAdvocates(filteredAdvocates);
   };
 
-  const onClick = () => {
+  const resetSearch = () => {
     console.log(advocates);
     setFilteredAdvocates(advocates);
   };
@@ -49,10 +49,13 @@ export default function Home() {
       <div>
         <p>Search</p>
         <p>
-          Searching for: <span id="search-term"></span>
+          Searching for: <span>{searchTerm}</span>
         </p>
-        <input style={{ border: "1px solid black" }} onChange={onChange} />
-        <button onClick={onClick}>Reset Search</button>
+        <input
+          style={{ border: "1px solid black" }}
+          onChange={handleSearchChange}
+        />
+        <button onClick={resetSearch}>Reset Search</button>
       </div>
       <br />
       <br />
