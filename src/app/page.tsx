@@ -55,7 +55,7 @@ export default function Home() {
         advocate.city.includes(searchTermValue) ||
         advocate.degree.includes(searchTermValue) ||
         advocate.specialties.includes(searchTermValue) ||
-        advocate.yearsOfExperience.includes(searchTermValue)
+        String(advocate.yearsOfExperience).includes(searchTermValue)
       );
     });
 
