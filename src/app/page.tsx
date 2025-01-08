@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 
 type Advocate = {
   id: number;
@@ -21,9 +21,30 @@ async function fetchData<T>(url: string): Promise<T> {
   return response.json();
 }
 
+const filterAdvocates = (
+  searchTerm: string,
+  advocates: Advocate[]
+): Advocate[] => {
+  const lowerCaseTerm = searchTerm.toLowerCase();
+  return advocates.filter((advocate) =>
+    [
+      "firstName",
+      "lastName",
+      "city",
+      "degree",
+      "specialties",
+      "yearsOfExperience",
+    ].some((key) => {
+      const value = advocate[key as keyof Advocate];
+      return Array.isArray(value)
+        ? value.some((v) => v.toLowerCase().includes(lowerCaseTerm))
+        : String(value).toLowerCase().includes(lowerCaseTerm);
+    })
+  );
+};
+
 export default function Home() {
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -34,7 +55,6 @@ export default function Home() {
           "/api/advocates"
         );
         setAdvocates(response.data || []);
-        setFilteredAdvocates(response.data || []);
       } catch (e) {
         // TODO: Properly handle error in UI.
         console.error(e);
@@ -46,26 +66,17 @@ export default function Home() {
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     const searchTermValue = e.currentTarget.value;
     setSearchTerm(searchTermValue);
-
-    console.log("filtering advocates...");
-    const filteredAdvocates = advocates.filter((advocate) => {
-      return (
-        advocate.firstName.includes(searchTermValue) ||
-        advocate.lastName.includes(searchTermValue) ||
-        advocate.city.includes(searchTermValue) ||
-        advocate.degree.includes(searchTermValue) ||
-        advocate.specialties.includes(searchTermValue) ||
-        String(advocate.yearsOfExperience).includes(searchTermValue)
-      );
-    });
-
-    setFilteredAdvocates(filteredAdvocates);
   };
 
   const resetSearch = () => {
     console.log(advocates);
-    setFilteredAdvocates(advocates);
+    setSearchTerm("");
   };
+
+  const filteredAdvocates = useMemo(
+    () => filterAdvocates(searchTerm, advocates),
+    [searchTerm, advocates]
+  );
 
   return (
     <main style={{ margin: "24px" }}>
