@@ -30,7 +30,7 @@ const DEFAULT_ACTIVE_FILTERS: ActiveFilterValues = {
 };
 
 export default function Home() {
-  const { advocates } = useAdvocates();
+  const { advocates, loading, error } = useAdvocates();
   const {
     refinedAdvocates,
     activeFilters,
@@ -40,6 +40,12 @@ export default function Home() {
     resetSearchAndFilters,
     dynamicFilterOptions,
   } = useRefineAdvocates(advocates);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>{error}</div>;
+  }
   return (
     <main className="m-6">
       <h1 className="text-3xl font-bold mb-6">Solace Advocates</h1>
