@@ -174,145 +174,183 @@ export default function Home() {
 
   return (
     <main className="m-6">
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
-      <div>
-        <p>Search</p>
-        <p>
-          Searching for: <span>{searchTerm}</span>
-        </p>
-        <input className="border border-black" onChange={handleSearchChange} />
-        <button onClick={resetSearchAndFilters}>Reset Search</button>
+      <h1 className="text-3xl font-bold mb-6">Solace Advocates</h1>
+
+      <div className="mb-6 flex flex-col gap-4">
+        <div className="flex gap-4 items-center">
+          <label htmlFor="search" className="sr-only">
+            Search by Name, City, Degree, or Phone Number
+          </label>
+          <input
+            id="search"
+            className="border border-gray-300 rounded-md p-2 w-full text-sm md:w-2/3"
+            placeholder="Search advocates"
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          <button
+            className="bg-green-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-green-800"
+            onClick={resetSearchAndFilters}
+          >
+            Reset
+          </button>
+        </div>
+
+        <div className="flex flex-wrap gap-4">
+          <div>
+            <label
+              htmlFor="specialty"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Specialty
+            </label>
+            <select
+              id="specialty"
+              className="border border-gray-300 rounded-md p-2 mt-1 text-sm"
+              value={filters.specialty}
+              onChange={(e) =>
+                setFilters({ ...filters, specialty: e.target.value })
+              }
+            >
+              <option value="">All Specialties</option>
+              {dynamicFilterOptions.specialties.map((specialty) => (
+                <option key={specialty} value={specialty}>
+                  {specialty}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="city"
+              className="block text-sm font-medium text-gray-700"
+            >
+              City
+            </label>
+            <select
+              id="city"
+              className="border border-gray-300 rounded-md p-2 mt-1 text-sm"
+              value={filters.city}
+              onChange={(e) => setFilters({ ...filters, city: e.target.value })}
+            >
+              <option value="">All Cities</option>
+              {dynamicFilterOptions.cities.map((city) => (
+                <option key={city} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="degree"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Degree
+            </label>
+            <select
+              id="degree"
+              className="border border-gray-300 rounded-md p-2 mt-1 text-sm"
+              value={filters.degree}
+              onChange={(e) =>
+                setFilters({ ...filters, degree: e.target.value })
+              }
+            >
+              <option value="">All Degrees</option>
+              {dynamicFilterOptions.degrees.map((degree) => (
+                <option key={degree} value={degree}>
+                  {degree}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="experienceRange"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Years of Experience
+            </label>
+            <select
+              id="experienceRange"
+              className="border border-gray-300 rounded-md p-2 mt-1 text-sm"
+              value={filters.experienceRange}
+              onChange={(e) =>
+                setFilters({ ...filters, experienceRange: e.target.value })
+              }
+            >
+              {EXPERIENCE_RANGES.map((range) => (
+                <option key={range.label} value={range.label}>
+                  {range.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
-      <br />
-      <br />
-      <div className="flex flex-wrap gap-4">
-        <div>
-          <label
-            htmlFor="specialty"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Specialty
-          </label>
-          <select
-            id="specialty"
-            className="border border-gray-300 rounded-md p-2 mt-1"
-            value={filters.specialty}
-            onChange={(e) =>
-              setFilters({ ...filters, specialty: e.target.value })
-            }
-          >
-            <option value="">All Specialties</option>
-            {dynamicFilterOptions.specialties.map((specialty) => (
-              <option key={specialty} value={specialty}>
-                {specialty}
-              </option>
-            ))}
-          </select>
-        </div>
 
-        <div>
-          <label
-            htmlFor="city"
-            className="block text-sm font-medium text-gray-700"
-          >
-            City
-          </label>
-          <select
-            id="city"
-            className="border border-gray-300 rounded-md p-2 mt-1"
-            value={filters.city}
-            onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-          >
-            <option value="">All Cities</option>
-            {dynamicFilterOptions.cities.map((city) => (
-              <option key={city} value={city}>
-                {city}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label
-            htmlFor="degree"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Degree
-          </label>
-          <select
-            id="degree"
-            className="border border-gray-300 rounded-md p-2 mt-1"
-            value={filters.degree}
-            onChange={(e) => setFilters({ ...filters, degree: e.target.value })}
-          >
-            <option value="">All Degrees</option>
-            {dynamicFilterOptions.degrees.map((degree) => (
-              <option key={degree} value={degree}>
-                {degree}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label
-            htmlFor="experienceRange"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Years of Experience
-          </label>
-          <select
-            id="experienceRange"
-            className="border border-gray-300 rounded-md p-2 mt-1"
-            value={filters.experienceRange}
-            onChange={(e) =>
-              setFilters({ ...filters, experienceRange: e.target.value })
-            }
-          >
-            {EXPERIENCE_RANGES.map((range) => (
-              <option key={range.label} value={range.label}>
-                {range.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-      <br />
-      <br />
-      <table>
-        <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>City</th>
-            <th>Degree</th>
-            <th>Specialties</th>
-            <th>Years of Experience</th>
-            <th>Phone Number</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filterAndSearchAdvocates.map((advocate) => {
-            return (
-              <tr key={advocate.id}>
-                <td>{advocate.firstName}</td>
-                <td>{advocate.lastName}</td>
-                <td>{advocate.city}</td>
-                <td>{advocate.degree}</td>
-                <td>
-                  {advocate.specialties.map((s) => (
-                    <div key={s}>{s}</div>
-                  ))}
+      <div className="overflow-x-auto">
+        <table className="w-full table-auto border-collapse border border-gray-200 text-sm">
+          <thead className="bg-gray-100 text-gray-600 uppercase text-xs font-semibold">
+            <tr>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                First Name
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Last Name
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                City
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Degree
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left hidden md:table-cell">
+                Specialties
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Years of Experience
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left hidden sm:table-cell">
+                Phone Number
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {filterAndSearchAdvocates.map((advocate) => (
+              <tr
+                key={advocate.id}
+                className="hover:bg-gray-50 transition-colors duration-200"
+              >
+                <td className="border border-gray-300 px-4 py-2">
+                  {advocate.firstName}
                 </td>
-                <td>{advocate.yearsOfExperience}</td>
-                <td>{advocate.phoneNumber}</td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {advocate.lastName}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {advocate.city}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {advocate.degree}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 hidden md:table-cell">
+                  {advocate.specialties.join(", ")}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {advocate.yearsOfExperience}
+                </td>
+                <td className="border border-gray-300 px-4 py-2 hidden sm:table-cell">
+                  {advocate.phoneNumber}
+                </td>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </main>
   );
 }
