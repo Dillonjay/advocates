@@ -32,7 +32,7 @@ export function useRefineAdvocates(advocates: Advocate[]) {
 
       const matchesSearch =
         fullName.includes(lowerCaseSearchTerm) ||
-        ["city", "degree", "phoneNumber"].some((key) => {
+        ["city", "degree", "specialties"].some((key) => {
           const value = advocate[key as keyof Advocate];
           return String(value).toLowerCase().includes(lowerCaseSearchTerm);
         });
