@@ -2,6 +2,7 @@
 
 import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { AdvocatesTable } from "./components/AdvocatesTable";
+import { SearchBar } from "./components/SearchBar";
 
 type Advocate = {
   id: number;
@@ -68,6 +69,7 @@ const filterAdvocates = (
 export default function Home() {
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const handleSearchChange = (term: string) => setSearchTerm(term);
   const [filters, setFilters] = useState<FilterValues>({
     specialty: "",
     city: "",
@@ -116,11 +118,6 @@ export default function Home() {
     };
     fetchAdvocates();
   }, []);
-
-  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const searchTermValue = e.currentTarget.value;
-    setSearchTerm(searchTermValue);
-  };
 
   const resetSearchAndFilters = () => {
     setSearchTerm("");
@@ -179,16 +176,13 @@ export default function Home() {
 
       <div className="mb-6 flex flex-col gap-4">
         <div className="flex gap-4 items-center">
-          <label htmlFor="search" className="sr-only">
-            Search by Name, City, Degree, or Phone Number
-          </label>
-          <input
-            id="search"
-            className="border border-gray-300 rounded-md p-2 w-full text-sm md:w-2/3"
-            placeholder="Search advocates"
+          <SearchBar
             value={searchTerm}
             onChange={handleSearchChange}
+            placeholder="Search advocates"
+            label="Search by Name, City, Degree, or Phone Number"
           />
+
           <button
             className="bg-green-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md hover:bg-green-800"
             onClick={resetSearchAndFilters}
