@@ -9,6 +9,9 @@ import {
   Advocate,
   DynamicFilterOptions,
 } from "./shared/types";
+import { fetchData } from "./shared/fetchData";
+import { useAdvocates } from "./hooks/useAdvocates";
+import { useDynamicFilterOptions } from "./hooks/useDynamicFilterOptions";
 
 const EXPERIENCE_RANGES = [
   { label: "Any", min: 0, max: Infinity },
@@ -18,79 +21,30 @@ const EXPERIENCE_RANGES = [
   { label: "10+ years", min: 10, max: Infinity },
 ];
 
-async function fetchData<T>(url: string): Promise<T> {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch data from ${url}`);
-  }
-  return response.json();
-}
+const DEFAULT_ACTIVE_FILTERS: ActiveFilterValues = {
+  specialty: "",
+  city: "",
+  degree: "",
+  experienceRange: "Any",
+};
 
 export default function Home() {
-  const [advocates, setAdvocates] = useState<Advocate[]>([]);
+  const { advocates } = useAdvocates();
+  const dynamicFilterOptions = useDynamicFilterOptions(advocates);
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilters, setActiveFilters] = useState<ActiveFilterValues>({
-    specialty: "",
-    city: "",
-    degree: "",
-    experienceRange: "Any",
-  });
-
-  const [dynamicFilterOptions, setDynamicFilterOptions] =
-    useState<DynamicFilterOptions>({
-      specialties: [],
-      cities: [],
-      degrees: [],
-    });
-
-  const handleSearchChange = (term: string) => setSearchTerm(term);
-
-  // Ideally this would be seperated into a seperate generic hook
-  useEffect(() => {
-    const fetchAdvocates = async () => {
-      try {
-        const response = await fetchData<{ data: Advocate[] }>(
-          "/api/advocates"
-        );
-        const data = response.data;
-        setAdvocates(data);
-
-        const specialties = new Set<string>();
-        const cities = new Set<string>();
-        const degrees = new Set<string>();
-
-        data.forEach((advocate) => {
-          advocate.specialties.forEach((specialty) =>
-            specialties.add(specialty)
-          );
-          cities.add(advocate.city);
-          degrees.add(advocate.degree);
-        });
-
-        setDynamicFilterOptions({
-          specialties: Array.from(specialties),
-          cities: Array.from(cities),
-          degrees: Array.from(degrees),
-        });
-      } catch (e) {
-        // TODO: Properly handle error in UI.
-        console.error(e);
-      }
-    };
-    fetchAdvocates();
-  }, []);
+  const [activeFilters, setActiveFilters] = useState<ActiveFilterValues>(
+    DEFAULT_ACTIVE_FILTERS
+  );
 
   const resetSearchAndFilters = () => {
     setSearchTerm("");
-    setActiveFilters({
-      specialty: "",
-      city: "",
-      degree: "",
-      experienceRange: "Any",
-    });
+    setActiveFilters(DEFAULT_ACTIVE_FILTERS);
   };
 
-  const filterAndSearchAdvocates = useMemo(() => {
+  const handleSearchChange = (term: string) => setSearchTerm(term);
+
+  const filteredAdvocates = useMemo(() => {
     return advocates.filter((advocate) => {
       const lowerCaseSearchTerm = searchTerm.toLowerCase();
       // I want to allow searching for the full name. So John Doe etc.
@@ -136,7 +90,7 @@ export default function Home() {
   return (
     <main className="m-6">
       <h1 className="text-3xl font-bold mb-6">Solace Advocates</h1>
-
+      {/* This whole next section could be split into a refinements component */}
       <div className="mb-6 flex flex-col gap-4">
         <div className="flex gap-4 items-center">
           <SearchBar
@@ -162,7 +116,7 @@ export default function Home() {
         />
       </div>
 
-      <AdvocatesTable advocates={filterAndSearchAdvocates} />
+      <AdvocatesTable advocates={filteredAdvocates} />
     </main>
   );
 }
