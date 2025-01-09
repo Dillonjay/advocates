@@ -4,18 +4,18 @@ type SearchBarProps = {
   value: string;
   label: string;
   placeholder: string;
-  onChange: (value: string) => void;
+  setSearchTerm: (value: string) => void;
 };
 
 export const SearchBar = ({
   value,
-  onChange,
+  setSearchTerm,
   placeholder,
   label,
 }: SearchBarProps) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const searchTermValue = e.currentTarget.value;
-    onChange(searchTermValue);
+    setSearchTerm(searchTermValue);
   };
   return (
     <>

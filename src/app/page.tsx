@@ -12,6 +12,7 @@ import {
 import { fetchData } from "./shared/fetchData";
 import { useAdvocates } from "./hooks/useAdvocates";
 import { useDynamicFilterOptions } from "./hooks/useDynamicFilterOptions";
+import { useRefineAdvocates } from "./hooks/useRefineAdvocates";
 
 const EXPERIENCE_RANGES = [
   { label: "Any", min: 0, max: Infinity },
@@ -30,63 +31,15 @@ const DEFAULT_ACTIVE_FILTERS: ActiveFilterValues = {
 
 export default function Home() {
   const { advocates } = useAdvocates();
-  const dynamicFilterOptions = useDynamicFilterOptions(advocates);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [activeFilters, setActiveFilters] = useState<ActiveFilterValues>(
-    DEFAULT_ACTIVE_FILTERS
-  );
-
-  const resetSearchAndFilters = () => {
-    setSearchTerm("");
-    setActiveFilters(DEFAULT_ACTIVE_FILTERS);
-  };
-
-  const handleSearchChange = (term: string) => setSearchTerm(term);
-
-  const filteredAdvocates = useMemo(() => {
-    return advocates.filter((advocate) => {
-      const lowerCaseSearchTerm = searchTerm.toLowerCase();
-      // I want to allow searching for the full name. So John Doe etc.
-      const fullName =
-        `${advocate.firstName} ${advocate.lastName}`.toLowerCase();
-
-      const matchesSearch =
-        fullName.includes(lowerCaseSearchTerm) || // Match full name
-        ["city", "degree", "phoneNumber"].some((key) => {
-          const value = advocate[key as keyof Advocate];
-          return String(value).toLowerCase().includes(lowerCaseSearchTerm);
-        });
-
-      const matchesSpecialty =
-        !activeFilters.specialty ||
-        advocate.specialties.includes(activeFilters.specialty);
-
-      const matchesCity =
-        !activeFilters.city || advocate.city === activeFilters.city;
-
-      const matchesDegree =
-        !activeFilters.degree || advocate.degree === activeFilters.degree;
-
-      const selectedRange = EXPERIENCE_RANGES.find(
-        (range) => range.label === activeFilters.experienceRange
-      );
-
-      const matchesExperience =
-        selectedRange &&
-        advocate.yearsOfExperience >= selectedRange.min &&
-        advocate.yearsOfExperience < selectedRange.max;
-
-      return (
-        matchesSearch &&
-        matchesSpecialty &&
-        matchesCity &&
-        matchesDegree &&
-        matchesExperience
-      );
-    });
-  }, [advocates, searchTerm, activeFilters]);
-
+  const {
+    refinedAdvocates,
+    activeFilters,
+    setActiveFilters,
+    searchTerm,
+    setSearchTerm,
+    resetSearchAndFilters,
+    dynamicFilterOptions,
+  } = useRefineAdvocates(advocates);
   return (
     <main className="m-6">
       <h1 className="text-3xl font-bold mb-6">Solace Advocates</h1>
@@ -95,7 +48,7 @@ export default function Home() {
         <div className="flex gap-4 items-center">
           <SearchBar
             value={searchTerm}
-            onChange={handleSearchChange}
+            setSearchTerm={setSearchTerm}
             placeholder="Search advocates"
             label="Search by Name, City, Degree, or Phone Number"
           />
@@ -116,7 +69,7 @@ export default function Home() {
         />
       </div>
 
-      <AdvocatesTable advocates={filteredAdvocates} />
+      <AdvocatesTable advocates={refinedAdvocates} />
     </main>
   );
 }
