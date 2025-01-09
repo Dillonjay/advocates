@@ -320,34 +320,45 @@ export default function Home() {
             </tr>
           </thead>
           <tbody>
-            {filterAndSearchAdvocates.map((advocate) => (
-              <tr
-                key={advocate.id}
-                className="hover:bg-gray-50 transition-colors duration-200"
-              >
-                <td className="border border-gray-300 px-4 py-2">
-                  {advocate.firstName}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {advocate.lastName}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {advocate.city}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {advocate.degree}
-                </td>
-                <td className="border border-gray-300 px-4 py-2 hidden md:table-cell">
-                  {advocate.specialties.join(", ")}
-                </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {advocate.yearsOfExperience}
-                </td>
-                <td className="border border-gray-300 px-4 py-2 hidden sm:table-cell">
-                  {advocate.phoneNumber}
+            {filterAndSearchAdvocates.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={7}
+                  className="border border-gray-300 px-4 py-6 text-center text-gray-600"
+                >
+                  No advocates found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              filterAndSearchAdvocates.map((advocate) => (
+                <tr
+                  key={advocate.id}
+                  className="hover:bg-gray-50 transition-colors duration-200"
+                >
+                  <td className="border border-gray-300 px-4 py-2">
+                    {advocate.firstName}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {advocate.lastName}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {advocate.city}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {advocate.degree}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 hidden md:table-cell">
+                    {advocate.specialties.join(", ")}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2">
+                    {advocate.yearsOfExperience}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 hidden sm:table-cell">
+                    {advocate.phoneNumber}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
