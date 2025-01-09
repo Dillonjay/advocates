@@ -8,3 +8,16 @@ export type Advocate = {
   yearsOfExperience: number;
   phoneNumber: number;
 };
+
+export type DynamicFilterOptions = {
+  specialties: string[];
+  cities: string[];
+  degrees: string[];
+};
+
+export type ActiveFilterValues = {
+  specialty: string;
+  city: string;
+  degree: string;
+  experienceRange: string;
+};
