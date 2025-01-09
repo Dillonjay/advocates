@@ -1,6 +1,10 @@
 import db from "../../../db";
 import { advocates } from "../../../db/schema";
 
+// Quick win for caching
+export const dynamic = "force-static";
+export const revalidate = 60;
+
 export async function GET() {
   try {
     const data = await db.select().from(advocates);
