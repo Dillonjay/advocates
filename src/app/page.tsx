@@ -1,82 +1,121 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
+
+type Advocate = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  city: string;
+  degree: string;
+  specialties: string[];
+  yearsOfExperience: number;
+  phoneNumber: number;
+};
+
+async function fetchData<T>(url: string): Promise<T> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch data from ${url}`);
+  }
+  return response.json();
+}
+
+const filterAdvocates = (
+  searchTerm: string,
+  advocates: Advocate[]
+): Advocate[] => {
+  const lowerCaseTerm = searchTerm.toLowerCase();
+  return advocates.filter((advocate) =>
+    [
+      "firstName",
+      "lastName",
+      "city",
+      "degree",
+      "specialties",
+      "yearsOfExperience",
+    ].some((key) => {
+      const value = advocate[key as keyof Advocate];
+      return Array.isArray(value)
+        ? value.some((v) => v.toLowerCase().includes(lowerCaseTerm))
+        : String(value).toLowerCase().includes(lowerCaseTerm);
+    })
+  );
+};
 
 export default function Home() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+  const [advocates, setAdvocates] = useState<Advocate[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
-      response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
-      });
-    });
+    const fetchAdvocates = async () => {
+      try {
+        const response = await fetchData<{ data: Advocate[] }>(
+          "/api/advocates"
+        );
+        setAdvocates(response.data || []);
+      } catch (e) {
+        // TODO: Properly handle error in UI.
+        console.error(e);
+      }
+    };
+    fetchAdvocates();
   }, []);
 
-  const onChange = (e) => {
-    const searchTerm = e.target.value;
-
-    document.getElementById("search-term").innerHTML = searchTerm;
-
-    console.log("filtering advocates...");
-    const filteredAdvocates = advocates.filter((advocate) => {
-      return (
-        advocate.firstName.includes(searchTerm) ||
-        advocate.lastName.includes(searchTerm) ||
-        advocate.city.includes(searchTerm) ||
-        advocate.degree.includes(searchTerm) ||
-        advocate.specialties.includes(searchTerm) ||
-        advocate.yearsOfExperience.includes(searchTerm)
-      );
-    });
-
-    setFilteredAdvocates(filteredAdvocates);
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const searchTermValue = e.currentTarget.value;
+    setSearchTerm(searchTermValue);
   };
 
-  const onClick = () => {
+  const resetSearch = () => {
     console.log(advocates);
-    setFilteredAdvocates(advocates);
+    setSearchTerm("");
   };
+
+  const filteredAdvocates = useMemo(
+    () => filterAdvocates(searchTerm, advocates),
+    [searchTerm, advocates]
+  );
 
   return (
-    <main style={{ margin: "24px" }}>
+    <main className="m-6">
       <h1>Solace Advocates</h1>
       <br />
       <br />
       <div>
         <p>Search</p>
         <p>
-          Searching for: <span id="search-term"></span>
+          Searching for: <span>{searchTerm}</span>
         </p>
-        <input style={{ border: "1px solid black" }} onChange={onChange} />
-        <button onClick={onClick}>Reset Search</button>
+        <input className="border border-black" onChange={handleSearchChange} />
+        <button onClick={resetSearch}>Reset Search</button>
       </div>
       <br />
       <br />
       <table>
         <thead>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>City</th>
-          <th>Degree</th>
-          <th>Specialties</th>
-          <th>Years of Experience</th>
-          <th>Phone Number</th>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>City</th>
+            <th>Degree</th>
+            <th>Specialties</th>
+            <th>Years of Experience</th>
+            <th>Phone Number</th>
+          </tr>
         </thead>
         <tbody>
           {filteredAdvocates.map((advocate) => {
             return (
-              <tr>
+              <tr key={advocate.id}>
                 <td>{advocate.firstName}</td>
                 <td>{advocate.lastName}</td>
                 <td>{advocate.city}</td>
                 <td>{advocate.degree}</td>
                 <td>
                   {advocate.specialties.map((s) => (
-                    <div>{s}</div>
+                    <div key={s}>{s}</div>
                   ))}
                 </td>
                 <td>{advocate.yearsOfExperience}</td>
